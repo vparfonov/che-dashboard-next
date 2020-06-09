@@ -128,8 +128,7 @@ export class SamplesListTab extends React.Component<Props, State> {
           />
         )}
         <PageSection
-          variant={PageSectionVariants.light}
-          className={'pf-u-pt-xs'}>
+          variant={PageSectionVariants.light}>
           <SamplesListHeader />
           <SamplesListToolbar
             persistVolumesDefault={persistVolumesDefault}

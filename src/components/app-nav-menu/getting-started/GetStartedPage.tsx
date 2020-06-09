@@ -11,6 +11,7 @@
  */
 
 import React, { Suspense } from 'react';
+import { History } from 'history';
 import { connect } from 'react-redux';
 import {
   PageSection,
@@ -26,52 +27,82 @@ import { AppState } from '../../../store';
 const SamplesListTab = React.lazy(() => import('./get-started-tab/SamplesListTab'));
 const CustomWorkspaceTab = React.lazy(() => import('./custom-workspace-tab/CustomWorkspaceTab'));
 
-type GetStartedPageProps = {
-  branding: BrandingState;
-} & { history: any };
+const PATH = '/get-started';
+const GET_STARTED_TAB_KEY = '#get-started';
+const CUSTOM_WORKSPACE_TAB_KEY = '#custom-workspace';
 
-type GetStartedPageState = {
-  activeTabKey: string | number;
+type Props = {
+  branding: BrandingState;
+} & { history: History };
+
+type State = {
+  activeTabKey: string;
 }
 
-export class GetStartedPage extends React.PureComponent<GetStartedPageProps, GetStartedPageState> {
+export class GetStartedPage extends React.PureComponent<Props, State> {
 
   private contentRef1: any;
   private contentRef2: any;
-  private getTitle: () => string;
 
   constructor(props) {
     super(props);
+
+    const activeTabKey = this.getActiveTabKey();
+    this.updateHistory(activeTabKey);
+
     this.state = {
-      activeTabKey: 0
+      activeTabKey
     };
 
     this.contentRef1 = React.createRef();
     this.contentRef2 = React.createRef();
-
-    // Toggle currently active tab
-    this.handleTabClick = this.handleTabClick.bind(this);
-
-    const productName = (this.props.branding.branding.branding as any).name;
-    const titles = [
-      `Getting Started with ${productName}`,
-      'Create Custom Workspace',
-    ];
-    this.getTitle = (): string => {
-      const tabIndex = parseInt(this.state.activeTabKey.toString(), 10) || 0;
-      return titles[tabIndex || 0];
-    };
   }
 
-  handleTabClick(event: React.MouseEvent<HTMLElement, MouseEvent>, tabIndex: number | string): void {
+  private getTitle(): string {
+    const productName = (this.props.branding.branding.branding as any).name;
+    const titles = {
+      [GET_STARTED_TAB_KEY]: `Getting Started with ${productName}`,
+      [CUSTOM_WORKSPACE_TAB_KEY]: 'Create Custom Workspace',
+    };
+    return titles[this.state.activeTabKey];
+  }
+
+  private getActiveTabKey(): string {
+    const { pathname, hash } = this.props.history.location;
+    if (pathname === PATH && hash === CUSTOM_WORKSPACE_TAB_KEY) {
+      return CUSTOM_WORKSPACE_TAB_KEY;
+    }
+
+    return GET_STARTED_TAB_KEY;
+  }
+
+  private updateHistory(tabKey: string): void {
+    const historyLocation = this.props.history.location;
+    if (historyLocation.pathname === '/') {
+      return;
+    }
+
+    if (tabKey === GET_STARTED_TAB_KEY
+      && historyLocation.hash !== GET_STARTED_TAB_KEY) {
+      this.props.history.replace(`${PATH}#${GET_STARTED_TAB_KEY}`);
+    } else if (tabKey === CUSTOM_WORKSPACE_TAB_KEY
+      && historyLocation.hash !== CUSTOM_WORKSPACE_TAB_KEY) {
+      this.props.history.replace(`${PATH}#${CUSTOM_WORKSPACE_TAB_KEY}`);
+    }
+  }
+
+  private handleTabClick(event: React.MouseEvent<HTMLElement, MouseEvent>, activeTabKey: React.ReactText): void {
+    this.props.history.push(`${PATH}${activeTabKey}`);
+
     this.setState({
-      activeTabKey: tabIndex
+      activeTabKey: activeTabKey as string,
     });
   }
 
   render(): React.ReactNode {
     const activeTabKey = this.state.activeTabKey;
     const title = this.getTitle();
+
     return (
       <React.Fragment>
         <PageSection variant={PageSectionVariants.light}>
@@ -80,36 +111,38 @@ export class GetStartedPage extends React.PureComponent<GetStartedPageProps, Get
         <PageSection variant={PageSectionVariants.light} padding={{ default: 'noPadding' }}>
           <Tabs isFilled
             activeKey={activeTabKey}
-            onSelect={this.handleTabClick}>
-            <Tab eventKey={0}
+            onSelect={(event, tabKey) => this.handleTabClick(event, tabKey)}>
+            <Tab eventKey={GET_STARTED_TAB_KEY}
               title="Get Started"
               tabContentId="refTab1Section"
               tabContentRef={this.contentRef1} />
-            <Tab eventKey={1}
+            <Tab eventKey={CUSTOM_WORKSPACE_TAB_KEY}
               title="Custom Workspace"
               tabContentId="refTab2Section"
               tabContentRef={this.contentRef2} />
           </Tabs>
         </PageSection>
         <div>
-          <TabContent eventKey={0}
+          <TabContent eventKey={GET_STARTED_TAB_KEY}
             id="refTab1Section"
             ref={this.contentRef1}
-            aria-label="Tab item 1">
+            aria-label="Get Started Tab"
+            hidden={activeTabKey !== GET_STARTED_TAB_KEY}>
             <Suspense fallback={<div>Loading...</div>}>
               <SamplesListTab history={this.props.history} />
             </Suspense>
           </TabContent>
-          <TabContent eventKey={1}
+          <TabContent eventKey={CUSTOM_WORKSPACE_TAB_KEY}
             id="refTab2Section"
             ref={this.contentRef2}
-            aria-label="Tab item 2"
-            hidden>
+            aria-label="Custom Workspace Tab"
+            hidden={activeTabKey !== CUSTOM_WORKSPACE_TAB_KEY}>
             <Suspense fallback={<div>Loading...</div>}>
               <CustomWorkspaceTab />
             </Suspense>
           </TabContent>
         </div>
+
       </React.Fragment>
     );
   }
