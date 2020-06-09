@@ -21,9 +21,9 @@ import {
   TextInput,
   TextInputProps,
 } from '@patternfly/react-core';
-import { TemporaryStorageSwitch } from './TemporaryStorageSwitch';
-import * as DevfileFiltersStore from '../../../store/DevfileFilters';
-import { AppState } from '../../../store';
+import { TemporaryStorageSwitch } from '../TemporaryStorageSwitch';
+import * as DevfileFiltersStore from '../../../../store/DevfileFilters';
+import { AppState } from '../../../../store';
 
 type SamplesListToolbarProps = {
   persistVolumesDefault: string;

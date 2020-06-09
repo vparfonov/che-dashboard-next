@@ -23,7 +23,8 @@ import {
 import { BrandingState } from '../../../store/Branding';
 import { AppState } from '../../../store';
 
-const SamplesListTab = React.lazy(() => import('./SamplesListTab'));
+const SamplesListTab = React.lazy(() => import('./get-started-tab/SamplesListTab'));
+const CustomWorkspaceTab = React.lazy(() => import('./custom-workspace-tab/CustomWorkspaceTab'));
 
 type GetStartedPageProps = {
   branding: BrandingState;
@@ -104,7 +105,9 @@ export class GetStartedPage extends React.PureComponent<GetStartedPageProps, Get
             ref={this.contentRef2}
             aria-label="Tab item 2"
             hidden>
-            Tab 2 section
+            <Suspense fallback={<div>Loading...</div>}>
+              <CustomWorkspaceTab />
+            </Suspense>
           </TabContent>
         </div>
       </React.Fragment>

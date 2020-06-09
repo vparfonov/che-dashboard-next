@@ -18,7 +18,6 @@ import {
 } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 
-
 type TemporaryStorageSwitchProps = {
   persistVolumesDefault: string;
   onChange: (temporary: boolean) => void;

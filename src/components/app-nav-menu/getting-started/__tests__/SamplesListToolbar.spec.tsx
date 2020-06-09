@@ -17,7 +17,7 @@ import { RenderResult, render, screen, fireEvent } from '@testing-library/react'
 import { Provider } from 'react-redux';
 import { Store } from 'redux';
 import { AppState } from '../../../../store';
-import SamplesListToolbar from '../SamplesListToolbar';
+import SamplesListToolbar from '../get-started-tab/SamplesListToolbar';
 import mockMetadata from './devfileMetadata.json';
 import * as DevfileFilterStore from '../../../../store/DevfileFilters';
 

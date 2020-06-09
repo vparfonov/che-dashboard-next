@@ -20,11 +20,11 @@ import {
   PageSection,
   PageSectionVariants,
 } from '@patternfly/react-core';
-import { AppState } from '../../../store';
-import { container } from '../../../inversify.config';
-import { Debounce } from '../../../services/debounce/Debounce';
-import * as WorkspacesStore from '../../../store/Workspaces';
-import CheProgress from '../../app-common/progress/progress';
+import { AppState } from '../../../../store';
+import { container } from '../../../../inversify.config';
+import { Debounce } from '../../../../services/debounce/Debounce';
+import * as WorkspacesStore from '../../../../store/Workspaces';
+import CheProgress from '../../../app-common/progress/progress';
 import { SamplesListHeader } from './SamplesListHeader';
 import SamplesListToolbar from './SamplesListToolbar';
 import SamplesListGallery from './SamplesListGallery';
@@ -32,18 +32,18 @@ import SamplesListGallery from './SamplesListGallery';
 import './SamplesListTab.styl';
 
 // At runtime, Redux will merge together...
-type DevfilesMetadataProps =
+type Props =
   {
     workspaces: WorkspacesStore.WorkspacesState;
   }// ... state we've requested from the Redux store
   & WorkspacesStore.ActionCreators // ... plus action creators we've requested
   & { history: any };
-type SamplesListTabState = {
+type State = {
   alertVisible: boolean;
   temporary: boolean;
 };
 
-export class SamplesListTab extends React.Component<DevfilesMetadataProps, SamplesListTabState> {
+export class SamplesListTab extends React.Component<Props, State> {
   private debounce: Debounce;
   private alert: { variant?: AlertVariant; title?: string } = {};
   private showAlert: (variant: AlertVariant, title: string, timeDelay?: number) => void;
@@ -52,8 +52,7 @@ export class SamplesListTab extends React.Component<DevfilesMetadataProps, Sampl
   private onTemporaryStorageChanged: (temporary: boolean) => void;
   private onSampleCardClicked: (devfile: string, stackName: string) => void;
 
-
-  constructor(props: DevfilesMetadataProps) {
+  constructor(props: Props) {
     super(props);
 
     this.debounce = container.get(Debounce);
